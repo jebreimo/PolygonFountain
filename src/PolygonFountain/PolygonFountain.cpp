@@ -182,12 +182,15 @@ private:
     unsigned m_Generations = 0;
 };
 
-int main()
+int main(int argc, char* argv[])
 {
     auto app = ExpandingPolygonsApplication{};
     try
     {
-        app.run();
+        Tungsten::WindowParameters windowParameters;
+        if (argc == 2 && argv[1] == std::string("--fullscreen"))
+            windowParameters.flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+        app.run(windowParameters);
     }
     catch (Tungsten::GlError& ex)
     {
