@@ -91,10 +91,10 @@ struct ElementArrayEntry
     GLsizei count;
 };
 
-class ExpandingPolygonsApplication : public Tungsten::SdlApplication
+class PolygonFountain : public Tungsten::EventLoop
 {
 public:
-    void setup() override
+    void onStartup(Tungsten::SdlApplication& app) override
     {
         Tungsten::ArrayBufferBuilder builder(3);
         for (unsigned i = 3; i < N_SHAPE_TYPES + 3; ++i)
@@ -120,7 +120,7 @@ public:
         m_Program.maxColor.set(Xyz::makeVector4<float>(1.0, 1.0, 1.0, 1.0));
     }
 
-    void update() override
+    void onUpdate(Tungsten::SdlApplication& app) override
     {
         for (auto& object : m_Objects)
             object.updateLocation();
@@ -141,12 +141,12 @@ public:
             m_Angle -= 2 * Xyz::PI_32;
     }
 
-    void draw() override
+    void onDraw(Tungsten::SdlApplication& app) override
     {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto projection = Xyz::scale4<float>(1.0f, aspectRatio(), 1.0f)
+        auto projection = Xyz::scale4<float>(1.0f, app.aspectRatio(), 1.0f)
                           * Xyz::makeFrustumMatrix<float>(-1, 1, -1, 1, 1, 5)
                           * Xyz::makeLookAtMatrix(Xyz::makeVector3<float>(0, 0, 1),
                                                   Xyz::makeVector3<float>(0, 0, 0),
@@ -184,15 +184,14 @@ private:
 
 int main(int argc, char* argv[])
 {
-    auto app = ExpandingPolygonsApplication{};
     try
     {
-        Tungsten::WindowParameters windowParameters;
-        if (argc == 2 && argv[1] == std::string("--fullscreen"))
-            windowParameters.flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
-        app.run(windowParameters);
+        Tungsten::SdlApplication app("PolygonFountain",
+                                     std::make_unique<PolygonFountain>());
+        app.parseCommandLineOptions(argc, argv);
+        app.run();
     }
-    catch (Tungsten::GlError& ex)
+    catch (std::exception& ex)
     {
         std::cout << ex.what() << "\n";
         return 1;

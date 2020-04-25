@@ -12,7 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(FetchContent)
 FetchContent_Declare(tungsten
-    GIT_REPOSITORY "https://github.com/jebreimo/Tungsten.git")
+    GIT_REPOSITORY "https://github.com/jebreimo/Tungsten.git"
+    GIT_TAG v0.1.0)
 FetchContent_GetProperties(tungsten)
 if (NOT tungsten_POPULATED)
     FetchContent_Populate(tungsten)
